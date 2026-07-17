@@ -46,15 +46,16 @@ export default function ImageEditor({ image }: ImageEditorProps) {
       <div className="lg:col-span-2">
 
         <PreviewCanvas
-          image={image}
-          zoom={zoom}
-          rotation={rotation}
-          brightness={brightness}
-          contrast={contrast}
-          saturation={saturation}
-          flipX={flipX}
-          flipY={flipY}
-        />
+  image={image}
+  zoom={zoom}
+  rotation={rotation}
+  brightness={brightness}
+  contrast={contrast}
+  saturation={saturation}
+  flipX={flipX}
+  flipY={flipY}
+  cropMode={cropMode}
+/>
 
       </div>
 
@@ -76,12 +77,19 @@ export default function ImageEditor({ image }: ImageEditorProps) {
   cropMode={cropMode}
   setCropMode={setCropMode}
 />
-        <EditorActions
+
+<EditorActions
   onRotateLeft={() => setRotation(rotation - 90)}
   onRotateRight={() => setRotation(rotation + 90)}
   onFlipHorizontal={() => setFlipX(!flipX)}
   onFlipVertical={() => setFlipY(!flipY)}
   onReset={resetEditor}
+  onDownload={() => {
+    alert("Download feature coming in next step.");
+  }}
+  onPrint={() => {
+    alert("Print feature coming in next step.");
+  }}
 />
 
       </div>
