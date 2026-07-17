@@ -23,17 +23,20 @@ export default function Toolbar({
   setSaturation,
 }: ToolbarProps) {
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 mt-6 space-y-6">
+    <div className="bg-white rounded-xl shadow-lg border p-6">
 
-      <h3 className="text-xl font-bold text-blue-700">
-        Image Controls
+      <h3 className="text-2xl font-bold text-blue-700 mb-6">
+        🎛 Image Controls
       </h3>
 
       {/* Zoom */}
-      <div>
-        <label className="font-medium">
-          Zoom ({zoom.toFixed(1)}x)
-        </label>
+      <div className="mb-6">
+        <div className="flex justify-between mb-2">
+          <label className="font-semibold">Zoom</label>
+          <span className="text-blue-600 font-medium">
+            {zoom.toFixed(1)}x
+          </span>
+        </div>
 
         <input
           type="range"
@@ -42,15 +45,18 @@ export default function Toolbar({
           step={0.1}
           value={zoom}
           onChange={(e) => setZoom(Number(e.target.value))}
-          className="w-full"
+          className="w-full cursor-pointer"
         />
       </div>
 
       {/* Brightness */}
-      <div>
-        <label className="font-medium">
-          Brightness ({brightness}%)
-        </label>
+      <div className="mb-6">
+        <div className="flex justify-between mb-2">
+          <label className="font-semibold">Brightness</label>
+          <span className="text-blue-600 font-medium">
+            {brightness}%
+          </span>
+        </div>
 
         <input
           type="range"
@@ -58,15 +64,18 @@ export default function Toolbar({
           max={150}
           value={brightness}
           onChange={(e) => setBrightness(Number(e.target.value))}
-          className="w-full"
+          className="w-full cursor-pointer"
         />
       </div>
 
       {/* Contrast */}
-      <div>
-        <label className="font-medium">
-          Contrast ({contrast}%)
-        </label>
+      <div className="mb-6">
+        <div className="flex justify-between mb-2">
+          <label className="font-semibold">Contrast</label>
+          <span className="text-blue-600 font-medium">
+            {contrast}%
+          </span>
+        </div>
 
         <input
           type="range"
@@ -74,15 +83,18 @@ export default function Toolbar({
           max={150}
           value={contrast}
           onChange={(e) => setContrast(Number(e.target.value))}
-          className="w-full"
+          className="w-full cursor-pointer"
         />
       </div>
 
       {/* Saturation */}
       <div>
-        <label className="font-medium">
-          Saturation ({saturation}%)
-        </label>
+        <div className="flex justify-between mb-2">
+          <label className="font-semibold">Saturation</label>
+          <span className="text-blue-600 font-medium">
+            {saturation}%
+          </span>
+        </div>
 
         <input
           type="range"
@@ -90,7 +102,7 @@ export default function Toolbar({
           max={200}
           value={saturation}
           onChange={(e) => setSaturation(Number(e.target.value))}
-          className="w-full"
+          className="w-full cursor-pointer"
         />
       </div>
 
