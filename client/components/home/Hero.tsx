@@ -28,7 +28,7 @@ export default function Hero() {
             </span>
 
             <h1 className="mt-8 text-5xl font-extrabold text-gray-900 leading-tight">
-              Professional Online Printing Solution
+              Professional Printing Solution 🚀
             </h1>
 
             <p className="mt-6 text-xl text-gray-600">
