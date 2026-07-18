@@ -8,21 +8,60 @@ export default function CropControls({
   setCropMode,
 }: CropControlsProps) {
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 mt-6">
+    <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
 
-      <h3 className="text-lg font-bold text-blue-700 mb-4">
-        Crop Tool
+      <h3 className="text-xl font-bold text-blue-700 mb-5">
+        ✂️ Crop Controls
       </h3>
 
       <button
         onClick={() => setCropMode(!cropMode)}
-        className={`w-full py-3 rounded-lg text-white font-semibold ${
+        className={`w-full py-3 rounded-lg text-white font-semibold transition ${
           cropMode
             ? "bg-red-600 hover:bg-red-700"
             : "bg-green-600 hover:bg-green-700"
         }`}
       >
         {cropMode ? "Cancel Crop" : "Start Crop"}
+      </button>
+
+      <div className="grid grid-cols-2 gap-3 mt-5">
+
+        <button
+          disabled={!cropMode}
+          className="bg-blue-600 disabled:bg-gray-300 text-white py-2 rounded-lg"
+        >
+          Free Crop
+        </button>
+
+        <button
+          disabled={!cropMode}
+          className="bg-blue-600 disabled:bg-gray-300 text-white py-2 rounded-lg"
+        >
+          1 : 1
+        </button>
+
+        <button
+          disabled={!cropMode}
+          className="bg-blue-600 disabled:bg-gray-300 text-white py-2 rounded-lg"
+        >
+          Aadhaar
+        </button>
+
+        <button
+          disabled={!cropMode}
+          className="bg-blue-600 disabled:bg-gray-300 text-white py-2 rounded-lg"
+        >
+          PAN Card
+        </button>
+
+      </div>
+
+      <button
+        disabled={!cropMode}
+        className="mt-5 w-full bg-orange-500 disabled:bg-gray-300 text-white py-3 rounded-lg"
+      >
+        Apply Crop
       </button>
 
     </div>
