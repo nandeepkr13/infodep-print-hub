@@ -11,6 +11,8 @@ type ImageEditorProps = {
 
 export default function ImageEditor({ image }: ImageEditorProps) {
   const [zoom, setZoom] = useState(1);
+  const [editedImage, setEditedImage] = useState(image);
+  const [cropAspect, setCropAspect] = useState<number | undefined>(undefined);
   const [rotation, setRotation] = useState(0);
   const [cropMode, setCropMode] = useState(false);  
   const [brightness, setBrightness] = useState(100);
@@ -55,6 +57,7 @@ export default function ImageEditor({ image }: ImageEditorProps) {
   flipX={flipX}
   flipY={flipY}
   cropMode={cropMode}
+  cropAspect={cropAspect}
 />
 
       </div>
@@ -74,9 +77,10 @@ export default function ImageEditor({ image }: ImageEditorProps) {
           setSaturation={setSaturation}
         />
         <CropControls
-  cropMode={cropMode}
-  setCropMode={setCropMode}
-/>
+            cropMode={cropMode}
+            setCropMode={setCropMode} setCropAspect={function (value: number | undefined): void {
+              throw new Error("Function not implemented.");
+            } }/>
 
 <EditorActions
   onRotateLeft={() => setRotation(rotation - 90)}
