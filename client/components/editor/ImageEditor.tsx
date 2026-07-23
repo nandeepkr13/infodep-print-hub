@@ -2,16 +2,21 @@
 
 import EditorActions from "./EditorActions";
 import CropControls from "./CropControls";
-import PreviewCanvas from "./PreviewCanvas";
+import PreviewCanvas from "./PreviewCanvas"
 import { useState } from "react";
 import Toolbar from "./Toolbar";
 import getCroppedImg from "@/utils/cropImage";
 
 type ImageEditorProps = {
   image: string;
+  backImage?: string;
+  onSave?: (image: string) => void;
 };
 
-export default function ImageEditor({ image }: ImageEditorProps) {
+export default function ImageEditor({
+  image,
+  onSave,
+}: ImageEditorProps) {
 
   const [zoom, setZoom] = useState(1);
   const [editedImage, setEditedImage] = useState(image);
@@ -67,41 +72,43 @@ export default function ImageEditor({ image }: ImageEditorProps) {
 
   const applyCrop = async () => {
 
-    try {
+  try {
 
-      if (!croppedAreaPixels) {
-
-        alert("Please select crop area first");
-        return;
-
-      }
-
-
-      const croppedImage = await getCroppedImg(
-        editedImage,
-        croppedAreaPixels,
-        rotation
-      );
-
-
-      setEditedImage(croppedImage);
-
-
-      setCropMode(false);
-
-
-      setZoom(1);
-      setRotation(0);
-
-
-    } catch (error) {
-
-      console.log(error);
-      alert("Crop failed");
-
+    if (!croppedAreaPixels) {
+      alert("Please select crop area first");
+      return;
     }
 
-  };
+
+    const croppedImage = await getCroppedImg(
+      editedImage,
+      croppedAreaPixels
+    );
+
+
+    setEditedImage(croppedImage);
+if(onSave){
+  onSave(croppedImage);
+}
+
+    // reset crop
+    setCroppedAreaPixels(null);
+
+    setCropMode(false);
+
+    setZoom(1);
+    setRotation(0);
+
+
+  } catch(error){
+
+    console.log(error);
+
+    alert("Crop failed");
+
+  }
+
+};
 
 
 
@@ -124,29 +131,18 @@ export default function ImageEditor({ image }: ImageEditorProps) {
 
 
           <PreviewCanvas
-
-            image={editedImage}
-
-            zoom={zoom}
-
-            rotation={rotation}
-
-            brightness={brightness}
-
-            contrast={contrast}
-
-            saturation={saturation}
-
-            flipX={flipX}
-
-            flipY={flipY}
-
-            cropMode={cropMode}
-
-            cropAspect={cropAspect}
-
-            setCroppedAreaPixels={setCroppedAreaPixels} croppedAreaPixels={undefined}
-          />
+  image={editedImage}
+  zoom={zoom}
+  rotation={rotation}
+  brightness={brightness}
+  contrast={contrast}
+  saturation={saturation}
+  flipX={flipX}
+  flipY={flipY}
+  cropMode={cropMode}
+  cropAspect={cropAspect}
+  setCroppedAreaPixels={setCroppedAreaPixels}
+/>
 
 
         </div>
@@ -228,7 +224,7 @@ export default function ImageEditor({ image }: ImageEditorProps) {
 
               link.href = editedImage;
 
-              link.download = "edited-image.jpg";
+              link.download = "Infodep-Edited-Image.jpg";
 
               document.body.appendChild(link);
 
@@ -239,11 +235,141 @@ export default function ImageEditor({ image }: ImageEditorProps) {
             }}
 
 
-            onPrint={() => {
-              alert("Print feature coming in next step.");
-            }}
+          onPrint={() => {
 
-          />
+  const printArea = document.getElementById("print-area");
+
+  if (!printArea) {
+    alert("Print area not found");
+    return;
+  }
+
+
+  const printWindow = window.open("", "_blank");
+
+  if (!printWindow) return;
+
+
+  printWindow.document.write(`
+
+<html>
+
+<head>
+
+<title>Infodep Print Hub</title>
+
+
+<style>
+
+*{
+ box-sizing:border-box;
+}
+
+
+@page{
+
+ size:A4;
+ margin:0;
+
+}
+
+
+html,body{
+
+ width:210mm;
+ height:297mm;
+ margin:0;
+ padding:0;
+
+}
+
+
+body{
+
+ display:flex;
+ justify-content:center;
+ align-items:flex-start;
+
+}
+
+
+#print-area{
+
+ width:210mm !important;
+ height:297mm !important;
+
+ position:relative;
+ overflow:hidden;
+
+}
+
+
+
+img{
+
+ position:absolute;
+
+}
+
+
+
+@media print{
+
+ body{
+
+  margin:0;
+  padding:0;
+
+ }
+
+
+ #print-area{
+
+  page-break-after:avoid;
+  page-break-inside:avoid;
+
+ }
+
+}
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+${printArea.outerHTML}
+
+
+</body>
+
+
+</html>
+
+
+`);
+
+
+printWindow.document.close();
+
+
+printWindow.onload = () => {
+
+ printWindow.focus();
+
+ printWindow.print();
+
+ printWindow.close();
+
+};
+
+
+}}
+ />
 
 
         </div>

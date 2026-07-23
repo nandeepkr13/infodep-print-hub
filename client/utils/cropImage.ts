@@ -1,78 +1,42 @@
 export default async function getCroppedImg(
-  imageSrc: string,
-  pixelCrop: any,
-  rotation = 0
-): Promise<string> {
+  imageSrc:string,
+  crop:any
+):Promise<string>{
+
 
   const image = await createImage(imageSrc);
 
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
 
-  if (!ctx) {
-    throw new Error("Canvas context not available");
+  const canvas=document.createElement("canvas");
+
+  const ctx=canvas.getContext("2d");
+
+
+  if(!ctx){
+    throw new Error("Canvas error");
   }
 
 
-  const radians = (rotation * Math.PI) / 180;
 
+  canvas.width=crop.width;
+  canvas.height=crop.height;
 
-  const sin = Math.abs(Math.sin(radians));
-  const cos = Math.abs(Math.cos(radians));
-
-
-  const boundingBoxWidth =
-    image.width * cos + image.height * sin;
-
-  const boundingBoxHeight =
-    image.width * sin + image.height * cos;
-
-
-
-  const tempCanvas = document.createElement("canvas");
-  const tempCtx = tempCanvas.getContext("2d");
-
-
-  if (!tempCtx) {
-    throw new Error("Temp canvas error");
-  }
-
-
-  tempCanvas.width = boundingBoxWidth;
-  tempCanvas.height = boundingBoxHeight;
-
-
-  tempCtx.translate(
-    boundingBoxWidth / 2,
-    boundingBoxHeight / 2
-  );
-
-
-  tempCtx.rotate(radians);
-
-
-  tempCtx.drawImage(
-    image,
-    -image.width / 2,
-    -image.height / 2
-  );
-
-
-
-  canvas.width = pixelCrop.width;
-  canvas.height = pixelCrop.height;
 
 
   ctx.drawImage(
-    tempCanvas,
-    pixelCrop.x,
-    pixelCrop.y,
-    pixelCrop.width,
-    pixelCrop.height,
+
+    image,
+
+    crop.x,
+    crop.y,
+    crop.width,
+    crop.height,
+
     0,
     0,
-    pixelCrop.width,
-    pixelCrop.height
+    crop.width,
+    crop.height
+
   );
 
 
@@ -81,33 +45,36 @@ export default async function getCroppedImg(
     "image/jpeg",
     0.95
   );
+
 }
 
 
 
+
 function createImage(
-  url: string
-): Promise<HTMLImageElement> {
-
-  return new Promise((resolve, reject) => {
-
-    const image = new Image();
+ url:string
+):Promise<HTMLImageElement>{
 
 
-    image.onload = () => {
-      resolve(image);
-    };
+ return new Promise((resolve,reject)=>{
 
 
-    image.onerror = (error) => {
-      reject(error);
-    };
+ const img=new Image();
 
 
-    image.crossOrigin = "anonymous";
+ img.onload=()=>resolve(img);
 
 
-    image.src = url;
+ img.onerror=reject;
 
-  });
+
+ img.crossOrigin="anonymous";
+
+
+ img.src=url;
+
+
+ });
+
+
 }

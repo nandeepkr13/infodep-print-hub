@@ -1,7 +1,6 @@
 "use client";
 
-import Cropper from "react-easy-crop";
-import { useState } from "react";
+import ManualCrop from "./ManualCrop";
 
 type PreviewCanvasProps = {
   image: string;
@@ -15,11 +14,12 @@ type PreviewCanvasProps = {
   cropMode: boolean;
   cropAspect: number | undefined;
 
-  croppedAreaPixels: any;
   setCroppedAreaPixels: (value: any) => void;
 };
 
+
 export default function PreviewCanvas({
+
   image,
   zoom,
   rotation,
@@ -30,24 +30,16 @@ export default function PreviewCanvas({
   flipY,
   cropMode,
   cropAspect,
-  croppedAreaPixels,
   setCroppedAreaPixels,
+
 }: PreviewCanvasProps) {
 
-  const [crop, setCrop] = useState({
-    x: 0,
-    y: 0,
-  });
-
-  const [cropZoom, setCropZoom] = useState(1);
-
-  const onCropComplete = (_: any, croppedPixels: any) => {
-    setCroppedAreaPixels(croppedPixels);
-  };
 
   if (!image) return null;
 
+
   return (
+
     <div
       className="
       relative
@@ -62,52 +54,72 @@ export default function PreviewCanvas({
       overflow-hidden
       "
     >
+
+
       {cropMode ? (
-        <Cropper
+
+        <ManualCrop
+
           image={image}
-          crop={crop}
-          zoom={cropZoom}
-          rotation={rotation}
+
           aspect={cropAspect}
-          onCropChange={setCrop}
-          onZoomChange={setCropZoom}
-          onCropComplete={onCropComplete}
-          objectFit="contain"
-          style={{
-            containerStyle: {
-              width: "100%",
-              height: "100%",
-              background: "#eee",
-            },
-          }}
+
+          onCropChange={setCroppedAreaPixels}
+
         />
+
+
       ) : (
+
+
         <img
+
           src={image}
+
           alt="Preview"
+
+
           style={{
-            transform: `
+
+            transform:`
+
               scale(${zoom})
               rotate(${rotation}deg)
               scaleX(${flipX ? -1 : 1})
               scaleY(${flipY ? -1 : 1})
+
             `,
-            filter: `
+
+
+            filter:`
+
               brightness(${brightness}%)
               contrast(${contrast}%)
               saturate(${saturation}%)
+
             `,
-            transition: "all .3s ease",
+
+
+            transition:"all .3s ease"
+
           }}
+
+
           className="
-            max-w-full
-            max-h-[500px]
-            object-contain
-            rounded-lg
-            shadow-lg
+          max-w-full
+          max-h-[500px]
+          object-contain
+          rounded-lg
+          shadow-lg
           "
+
         />
+
+
       )}
+
+
     </div>
+
   );
 }
