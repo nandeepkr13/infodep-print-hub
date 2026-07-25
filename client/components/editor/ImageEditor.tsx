@@ -74,37 +74,85 @@ export default function ImageEditor({
 
   try {
 
-    if (!croppedAreaPixels) {
-      alert("Please select crop area first");
-      return;
-    }
 
-
-    const croppedImage = await getCroppedImg(
-      editedImage,
+    console.log(
+      "Crop Points:",
       croppedAreaPixels
     );
 
 
-    setEditedImage(croppedImage);
-if(onSave){
-  onSave(croppedImage);
-}
 
-    // reset crop
+    if (
+      !croppedAreaPixels ||
+      croppedAreaPixels.length !== 4
+    ) {
+
+      alert(
+        "Please select crop area first"
+      );
+
+      return;
+
+    }
+
+
+
+    const croppedImage =
+      await getCroppedImg(
+        editedImage,
+        croppedAreaPixels
+      );
+
+
+
+    console.log(
+      "Crop Completed"
+    );
+
+
+
+    setEditedImage(
+      croppedImage
+    );
+
+
+
+    if(onSave){
+
+      onSave(
+        croppedImage
+      );
+
+    }
+
+
+
+    // reset crop mode
+
     setCroppedAreaPixels(null);
 
     setCropMode(false);
 
+
     setZoom(1);
+
     setRotation(0);
+
 
 
   } catch(error){
 
-    console.log(error);
 
-    alert("Crop failed");
+    console.error(
+      "Crop Failed:",
+      error
+    );
+
+
+    alert(
+      "Crop failed"
+    );
+
 
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import ManualCrop from "./ManualCrop";
+import PerspectiveCrop from "./PerspectiveCrop";
 
 type PreviewCanvasProps = {
   image: string;
@@ -58,15 +58,10 @@ export default function PreviewCanvas({
 
       {cropMode ? (
 
-        <ManualCrop
-
-          image={image}
-
-          aspect={cropAspect}
-
-          onCropChange={setCroppedAreaPixels}
-
-        />
+       <PerspectiveCrop
+   image={image}
+   setCroppedAreaPixels={setCroppedAreaPixels}
+/>
 
 
       ) : (

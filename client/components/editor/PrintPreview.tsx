@@ -1,223 +1,146 @@
 "use client";
 
 type PrintPreviewProps = {
-  frontImage:string;
-  backImage:string;
+  frontImage: string;
+  backImage: string;
 };
-
 
 export default function PrintPreview({
+  frontImage,
+  backImage,
+}: PrintPreviewProps) {
 
-frontImage,
-backImage
+  const printPage = () => {
 
-}:PrintPreviewProps){
+    const printArea =
+      document.getElementById("print-area");
 
+    if (!printArea) return;
 
-const printPage = ()=>{
+    const win = window.open("", "_blank");
 
+    if (!win) return;
 
-const printArea =
-document.getElementById("print-area");
+    win.document.write(`
+      <html>
+      <head>
+      <title>Infodep Print Hub</title>
 
+      <style>
 
-if(!printArea) return;
+      @page{
+        size:A4;
+        margin:0;
+      }
 
+      html,body{
+        margin:0;
+        padding:0;
+      }
 
-const win =
-window.open("","_blank");
+      body{
+        display:flex;
+        justify-content:center;
+        align-items:flex-start;
+        background:white;
+      }
 
+      #print-area{
+        width:210mm;
+        height:297mm;
+        position:relative;
+        overflow:hidden;
+      }
 
-if(!win) return;
+      img{
+        position:absolute;
+      }
 
+      </style>
 
-win.document.write(`
+      </head>
 
-<html>
+      <body>
 
-<head>
+      ${printArea.outerHTML}
 
-<style>
+      </body>
 
+      </html>
+    `);
 
-@page{
+    win.document.close();
 
-size:A4;
-margin:0;
+    win.onload = () => {
+      win.focus();
+      win.print();
+      win.close();
+    };
 
-}
+  };
 
+  return (
 
-body{
+    <div className="mt-10">
 
-margin:0;
+      <div
+        id="print-area"
+        className="bg-white shadow-xl relative mx-auto border"
+        style={{
+          width: "210mm",
+          height: "297mm",
+        }}
+      >
 
-}
+        {frontImage && (
 
+          <img
+            src={frontImage}
+            alt="Front"
+            style={{
+              position: "absolute",
+              top: "20mm",
+              left: "20mm",
+              width: "85.6mm",
+              height: "54mm",
+              objectFit: "contain",
+            }}
+          />
 
-#print-area{
+        )}
 
-width:210mm;
-height:297mm;
-position:relative;
+        {backImage && (
 
-}
+          <img
+            src={backImage}
+            alt="Back"
+            style={{
+              position: "absolute",
+              top: "90mm",
+              left: "20mm",
+              width: "85.6mm",
+              height: "54mm",
+              objectFit: "contain",
+            }}
+          />
 
+        )}
 
-img{
+      </div>
 
-position:absolute;
+      <div className="flex justify-center mt-6">
 
-}
+        <button
+          onClick={printPage}
+          className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-xl"
+        >
+          🖨 Print A4
+        </button>
 
+      </div>
 
+    </div>
 
-</style>
-
-</head>
-
-
-<body>
-
-
-${printArea.outerHTML}
-
-
-</body>
-
-</html>
-
-
-`);
-
-
-win.document.close();
-
-
-win.onload=()=>{
-
-win.print();
-
-win.close();
-
-};
-
-
-};
-
-
-
-return (
-
-
-
-
-<div
-
-id="print-area"
-
-className="
-bg-white
-shadow-xl
-relative
-"
-
-style={{
-
-width:"210mm",
-height:"297mm"
-
-}}
-
->
-
-
-{/* FRONT */}
-
-{frontImage && (
-
-<img
-
-src={frontImage}
-
-alt="Front"
-
-style={{
-
-position:"absolute",
-
-top:"20mm",
-
-left:"20mm",
-
-width:"85.6mm",
-
-height:"54mm",
-
-objectFit:"contain"
-
-}}
-
-/>
-
-)}
-
-
-
-{backImage && (
-
-<img
-
-src={backImage}
-
-alt="Back"
-
-style={{
-
-position:"absolute",
-
-top:"90mm",
-
-left:"20mm",
-
-width:"85.6mm",
-
-height:"54mm",
-
-objectFit:"contain"
-
-}}
-
-/>
-
-)}
-
-
-
-<button
-
-onClick={printPage}
-
-className="
-mt-6
-bg-orange-600
-text-white
-px-8
-py-3
-rounded-xl
-"
-
->
-
-🖨 Print A4
-
-</button>
-
-
-</div>
-
-
-);
-
+  );
 
 }

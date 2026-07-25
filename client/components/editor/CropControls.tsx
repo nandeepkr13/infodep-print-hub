@@ -103,24 +103,30 @@ export default function CropControls({
 
       {/* Apply Crop */}
       <button
-        disabled={!cropMode}
-        onClick={onApplyCrop}
-        className="
-        mt-5
-        w-full
-        bg-orange-500
-        hover:bg-orange-600
-        disabled:bg-gray-300
-        text-white
-        py-3
-        rounded-lg
-        font-semibold
-        transition
-        "
-      >
-        ✅ Apply Crop
-      </button>
+  onClick={() => {
 
+    console.log("Apply Crop Clicked");
+
+    onApplyCrop();
+
+  }}
+
+  className="
+  mt-5
+  w-full
+  bg-orange-500
+  hover:bg-orange-600
+  active:scale-95
+  text-white
+  py-3
+  rounded-lg
+  font-semibold
+  transition
+  cursor-pointer
+  "
+>
+  ✅ Apply Crop
+</button>
 
     </div>
   );
