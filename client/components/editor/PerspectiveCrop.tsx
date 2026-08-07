@@ -1,19 +1,24 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import {
+  useRef,
+  useState,
+  useEffect
+} from "react";
+
+import CornerHandle from "./CornerHandle";
+import CropOverlay from "./CropOverlay";
+
+import {
+  Point,
+  Quad
+} from "./types";
 
 
-type Point={
- x:number;
- y:number;
+type PerspectiveCropProps = {
+  image:string;
+  setCroppedAreaPixels:(value:Quad)=>void;
 };
-
-
-type PerspectiveCropProps={
- image:string;
- setCroppedAreaPixels:(value:any)=>void;
-};
-
 
 
 export default function PerspectiveCrop({
@@ -24,21 +29,34 @@ setCroppedAreaPixels
 }:PerspectiveCropProps){
 
 
-const containerRef=useRef<HTMLDivElement>(null);
-
-const imageRef=useRef<HTMLImageElement>(null);
-
+const containerRef =
+useRef<HTMLDivElement>(null);
 
 
-const [points,setPoints]=useState<Point[]>([
+const imageRef =
+useRef<HTMLImageElement>(null);
 
-{x:80,y:80},
-{x:520,y:80},
-{x:520,y:400},
-{x:80,y:400}
 
+
+const [points,setPoints] =
+useState<Quad>([
+  {
+    x:40,
+    y:40
+  },
+  {
+    x:460,
+    y:40
+  },
+  {
+    x:460,
+    y:360
+  },
+  {
+    x:40,
+    y:360
+  }
 ]);
-
 
 
 const [activePoint,setActivePoint]
@@ -47,69 +65,61 @@ useState<number|null>(null);
 
 
 
-
+/*
+ Convert screen points
+ into original image pixels
+*/
 
 useEffect(()=>{
 
 
 const img=imageRef.current;
+const box=containerRef.current;
 
 
-const container=containerRef.current;
-
-
-if(!img || !container) return;
+if(!img || !box) return;
 
 
 
-const imgRect=
+const imgRect =
 img.getBoundingClientRect();
 
 
-
-const containerRect=
-container.getBoundingClientRect();
-
+const boxRect =
+box.getBoundingClientRect();
 
 
 
+const offsetX =
+imgRect.left-boxRect.left;
 
-const offsetX=
-imgRect.left-containerRect.left;
 
-
-const offsetY=
-imgRect.top-containerRect.top;
-
+const offsetY =
+imgRect.top-boxRect.top;
 
 
 
-
-const scaleX=
+const scaleX =
 img.naturalWidth/imgRect.width;
 
 
-const scaleY=
+const scaleY =
 img.naturalHeight/imgRect.height;
 
 
 
-
-
-const originalPoints=
+const original =
 points.map(p=>({
-
 
 x:(p.x-offsetX)*scaleX,
 
 y:(p.y-offsetY)*scaleY
 
-
-}));
-
+})) as Quad;
 
 
-setCroppedAreaPixels(originalPoints);
+
+setCroppedAreaPixels(original);
 
 
 
@@ -119,72 +129,59 @@ setCroppedAreaPixels(originalPoints);
 
 
 
+const movePoint = (
+e:React.PointerEvent
+)=>{
 
 
-const handleMove=(e:React.MouseEvent)=>{
+if(activePoint===null)
+return;
 
 
-if(activePoint===null) return;
-
-
-const container=
+const box =
 containerRef.current;
 
 
-if(!container) return;
+if(!box)
+return;
 
 
 
-const rect=
-container.getBoundingClientRect();
+const rect =
+box.getBoundingClientRect();
 
 
 
-const x=Math.max(
-
+const x =
+Math.max(
 0,
-
 Math.min(
-
 rect.width,
-
 e.clientX-rect.left
-
 )
-
 );
 
 
 
-const y=Math.max(
-
+const y =
+Math.max(
 0,
-
 Math.min(
-
 rect.height,
-
 e.clientY-rect.top
-
 )
-
 );
-
 
 
 
 setPoints(prev=>{
 
-
-const copy=[...prev];
+const copy=[...prev] as Quad;
 
 
 copy[activePoint]={
-
 x,
-
 y
-
 };
 
 
@@ -194,10 +191,8 @@ return copy;
 });
 
 
+
 };
-
-
-
 
 
 
@@ -207,11 +202,16 @@ return (
 
 ref={containerRef}
 
-onMouseMove={handleMove}
+onPointerMove={movePoint}
 
-onMouseUp={()=>setActivePoint(null)}
+onPointerUp={()=>{
+setActivePoint(null)
+}}
 
-onMouseLeave={()=>setActivePoint(null)}
+onPointerLeave={()=>{
+setActivePoint(null)
+}}
+
 
 className="
 relative
@@ -224,7 +224,6 @@ select-none
 "
 
 >
-
 
 
 <img
@@ -240,7 +239,7 @@ absolute
 inset-0
 w-full
 h-full
-object-contain
+object-fill
 pointer-events-none
 "
 
@@ -248,90 +247,19 @@ pointer-events-none
 
 
 
+<CropOverlay
 
+cropMode={true}
 
-<svg
+points={points}
 
-className="
-absolute
-inset-0
-w-full
-h-full
-pointer-events-none
-"
+onMoveStart={(index)=>{
 
->
-
-
-<polygon
-
-points={
-points.map(p=>`${p.x},${p.y}`).join(" ")
-}
-
-fill="rgba(0,120,255,.15)"
-
-stroke="#2196f3"
-
-strokeWidth="3"
-
-/>
-
-
-</svg>
-
-
-
-
-
-
-{
-points.map((p,i)=>(
-
-
-<div
-
-key={i}
-
-onMouseDown={(e)=>{
-
-e.preventDefault();
-
-setActivePoint(i);
+setActivePoint(index);
 
 }}
 
-
-style={{
-
-left:p.x-10,
-
-top:p.y-10
-
-}}
-
-
-
-className="
-absolute
-w-6
-h-6
-rounded-full
-bg-white
-border-4
-border-blue-600
-cursor-grab
-shadow-lg
-"
-
 />
-
-
-))
-}
-
-
-
 
 
 </div>

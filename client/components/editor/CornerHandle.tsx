@@ -5,38 +5,49 @@ import { Point } from "./types";
 type CornerHandleProps = {
   point: Point;
   index: number;
-  onMouseDown: (index: number) => void;
+  onPointerDown: (
+    index: number,
+    e: React.PointerEvent<HTMLDivElement>
+  ) => void;
 };
 
 export default function CornerHandle({
   point,
   index,
-  onMouseDown,
+  onPointerDown,
 }: CornerHandleProps) {
+
   return (
     <div
-      onMouseDown={(e) => {
+      onPointerDown={(e) => {
         e.preventDefault();
-        onMouseDown(index);
+        e.stopPropagation();
+
+        onPointerDown(index, e);
       }}
+
       style={{
-        left: point.x - 10,
-        top: point.y - 10,
+        left: point.x - 12,
+        top: point.y - 12,
+        touchAction: "none",
       }}
+
       className="
         absolute
-        w-5
-        h-5
+        w-6
+        h-6
         rounded-full
         bg-white
         border-4
         border-blue-600
-        shadow-lg
+        shadow-xl
         cursor-grab
         active:cursor-grabbing
         hover:scale-110
-        transition
+        transition-transform
+        z-30
       "
     />
+
   );
 }

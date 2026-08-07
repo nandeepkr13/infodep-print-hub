@@ -1,351 +1,149 @@
-let cv:any = null;
-
-
-function loadOpenCV():Promise<any>{
-
-return new Promise((resolve,reject)=>{
-
-
-if(cv){
-
-resolve(cv);
-
-return;
-
-}
-
-
-
-const existing =
-document.querySelector(
-"script[src='/opencv.js']"
-);
-
-
-
-if(existing){
-
-
-const check = setInterval(()=>{
-
-
-const loaded =
-(window as any).cv;
-
-
-if(loaded){
-
-clearInterval(check);
-
-cv=loaded;
-
-resolve(cv);
-
-}
-
-
-},100);
-
-
-return;
-
-
-}
-
-
-
-
-
-const script =
-document.createElement("script");
-
-
-script.src="/opencv.js";
-
-
-script.async=true;
-
-
-
-script.onload=()=>{
-
-
-const check =
-setInterval(()=>{
-
-
-const loaded =
-(window as any).cv;
-
-
-
-if(loaded){
-
-
-clearInterval(check);
-
-
-cv=loaded;
-
-
-resolve(cv);
-
-
-}
-
-
-
-},100);
-
-
-
-};
-
-
-
-script.onerror=()=>{
-
-reject(
-new Error("OpenCV loading failed")
-);
-
-};
-
-
-
-document.body.appendChild(script);
-
-
-
-});
-
-
-}
-
-
-
-
 export default async function getCroppedImg(
- imageSrc:string,
- points:any[]
-):Promise<string>{
+  imageSrc: string,
+  points: any[]
+): Promise<string> {
 
 
+  const image = await createImage(imageSrc);
 
-const cv = await loadOpenCV();
 
 
+  const canvas = document.createElement("canvas");
 
-if(!cv){
+  const ctx = canvas.getContext("2d");
 
-throw new Error(
-"OpenCV not ready"
-);
 
-}
+  if (!ctx) {
+    throw new Error("Canvas error");
+  }
 
 
 
+  canvas.width = image.naturalWidth;
 
-const image =
-await createImage(imageSrc);
+  canvas.height = image.naturalHeight;
 
 
 
+  ctx.drawImage(
+    image,
+    0,
+    0
+  );
 
-const canvas =
-document.createElement("canvas");
 
 
-canvas.width =
-image.naturalWidth;
+  const xs = points.map(
+    (p)=>p.x
+  );
 
+  const ys = points.map(
+    (p)=>p.y
+  );
 
-canvas.height =
-image.naturalHeight;
 
 
+  const minX = Math.max(
+    0,
+    Math.min(...xs)
+  );
 
-const ctx =
-canvas.getContext("2d");
 
+  const maxX = Math.min(
+    image.naturalWidth,
+    Math.max(...xs)
+  );
 
 
-if(!ctx){
 
-throw new Error(
-"Canvas error"
-);
+  const minY = Math.max(
+    0,
+    Math.min(...ys)
+  );
 
-}
 
+  const maxY = Math.min(
+    image.naturalHeight,
+    Math.max(...ys)
+  );
 
 
-ctx.drawImage(
-image,
-0,
-0
-);
 
+  const cropWidth =
+    maxX - minX;
 
 
+  const cropHeight =
+    maxY - minY;
 
 
-const src =
-cv.imread(canvas);
 
+  // Keep original ratio
 
+  const aspectRatio =
+    cropWidth / cropHeight;
 
 
 
-const width = 600;
+  const outputWidth = 1000;
 
-const height = 400;
+  const outputHeight =
+    Math.round(
+      outputWidth / aspectRatio
+    );
 
 
 
+  const output =
+    document.createElement("canvas");
 
 
-const srcTri =
-cv.matFromArray(
 
-4,
+  output.width = outputWidth;
 
-1,
+  output.height = outputHeight;
 
-cv.CV_32FC2,
 
-[
 
-points[0].x,
-points[0].y,
+  const outputCtx =
+    output.getContext("2d");
 
 
-points[1].x,
-points[1].y,
 
+  if(!outputCtx){
 
-points[2].x,
-points[2].y,
+    throw new Error(
+      "Output canvas error"
+    );
 
+  }
 
-points[3].x,
-points[3].y
 
-]
 
-);
+  outputCtx.drawImage(
 
+    canvas,
 
+    minX,
+    minY,
+    cropWidth,
+    cropHeight,
 
 
+    0,
+    0,
 
+    outputWidth,
+    outputHeight
 
-const dstTri =
-cv.matFromArray(
+  );
 
-4,
 
-1,
 
-cv.CV_32FC2,
-
-[
-
-0,0,
-
-width,0,
-
-width,height,
-
-0,height
-
-]
-
-);
-
-
-
-
-
-
-const M =
-cv.getPerspectiveTransform(
-srcTri,
-dstTri
-);
-
-
-
-
-
-const dst =
-new cv.Mat();
-
-
-
-
-
-cv.warpPerspective(
-
-src,
-
-dst,
-
-M,
-
-new cv.Size(
-width,
-height
-)
-
-);
-
-
-
-
-
-
-const output =
-document.createElement("canvas");
-
-
-
-output.width=width;
-
-output.height=height;
-
-
-
-cv.imshow(
-output,
-dst
-);
-
-
-
-
-
-
-src.delete();
-
-srcTri.delete();
-
-dstTri.delete();
-
-M.delete();
-
-dst.delete();
-
-
-
-
-
-return output.toDataURL(
-"image/jpeg",
-0.95
-);
-
+  return output.toDataURL(
+    "image/jpeg",
+    0.95
+  );
 
 
 }
@@ -355,35 +153,40 @@ return output.toDataURL(
 
 
 function createImage(
-url:string
+  url:string
 ):Promise<HTMLImageElement>{
 
 
-return new Promise((resolve,reject)=>{
+  return new Promise(
+    (resolve,reject)=>{
 
 
-const img =
-new Image();
-
-
-
-img.onload=()=>resolve(img);
+      const img =
+      new Image();
 
 
 
-img.onerror=reject;
+      img.onload = () =>
+      resolve(img);
 
 
 
-img.crossOrigin="anonymous";
+      img.onerror =
+      reject;
 
 
 
-img.src=url;
+      img.crossOrigin =
+      "anonymous";
 
 
 
-});
+      img.src = url;
+
+
+
+    }
+  );
 
 
 }

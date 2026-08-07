@@ -2,10 +2,11 @@
 
 import EditorActions from "./EditorActions";
 import CropControls from "./CropControls";
-import PreviewCanvas from "./PreviewCanvas"
+import PreviewCanvas from "./PreviewCanvas";
 import { useState } from "react";
 import Toolbar from "./Toolbar";
 import getCroppedImg from "@/utils/cropImage";
+
 
 type ImageEditorProps = {
   image: string;
@@ -13,150 +14,200 @@ type ImageEditorProps = {
   onSave?: (image: string) => void;
 };
 
+
 export default function ImageEditor({
   image,
   onSave,
 }: ImageEditorProps) {
 
+
   const [zoom, setZoom] = useState(1);
-  const [editedImage, setEditedImage] = useState(image);
+
+  const [editedImage, setEditedImage] =
+    useState(image);
+
+
 
   const [cropAspect, setCropAspect] =
     useState<number | undefined>(undefined);
 
-  const [croppedAreaPixels, setCroppedAreaPixels] =
-    useState<any>(null);
 
-  const [rotation, setRotation] = useState(0);
+
+  const [croppedAreaPixels, setCroppedAreaPixels] =
+    useState<any[]>([]);
+
+
+
+  const [rotation, setRotation] =
+    useState(0);
+
+
 
   const [cropMode, setCropMode] =
     useState(false);
 
+
+
   const [brightness, setBrightness] =
     useState(100);
 
+
+
   const [contrast, setContrast] =
     useState(100);
+
+
 
   const [saturation, setSaturation] =
     useState(100);
 
 
+
   const [flipX, setFlipX] =
     useState(false);
+
+
 
   const [flipY, setFlipY] =
     useState(false);
 
 
 
-  if (!image) return null;
+
+  if(!image) return null;
 
 
 
-  const resetEditor = () => {
+
+  const resetEditor = ()=>{
 
     setZoom(1);
+
     setRotation(0);
 
     setBrightness(100);
+
     setContrast(100);
+
     setSaturation(100);
 
     setFlipX(false);
+
     setFlipY(false);
 
   };
 
 
 
-  const applyCrop = async () => {
-
-  try {
 
 
-    console.log(
-      "Crop Points:",
-      croppedAreaPixels
-    );
+  const applyCrop = async()=>{
 
 
-
-    if (
-      !croppedAreaPixels ||
-      croppedAreaPixels.length !== 4
-    ) {
-
-      alert(
-        "Please select crop area first"
-      );
-
-      return;
-
-    }
+    try{
 
 
-
-    const croppedImage =
-      await getCroppedImg(
-        editedImage,
+      console.log(
+        "Crop Points:",
         croppedAreaPixels
       );
 
 
 
-    console.log(
-      "Crop Completed"
-    );
+      if(
+        !croppedAreaPixels ||
+        croppedAreaPixels.length !== 4
+      ){
+
+        alert(
+          "Please select crop area first"
+        );
+
+        return;
+
+      }
 
 
 
-    setEditedImage(
-      croppedImage
-    );
+
+      const croppedImage =
+        await getCroppedImg(
+          editedImage,
+          croppedAreaPixels
+        );
 
 
 
-    if(onSave){
+      console.log(
+        "Crop Completed"
+      );
 
-      onSave(
+
+
+      setEditedImage(
         croppedImage
       );
+
+
+
+      if(onSave){
+
+        onSave(
+          croppedImage
+        );
+
+      }
+
+
+
+
+      // Reset Crop
+
+      setCroppedAreaPixels([]);
+
+      setCropMode(false);
+
+
+
+      // Reset Editor
+
+      setZoom(1);
+
+      setRotation(0);
+
+      setBrightness(100);
+
+      setContrast(100);
+
+      setSaturation(100);
+
+      setFlipX(false);
+
+      setFlipY(false);
+
+
+
+    }
+    catch(error){
+
+
+      console.error(
+        "Crop Failed:",
+        error
+      );
+
+
+      alert(
+        "Crop failed"
+      );
+
 
     }
 
 
-
-    // reset crop mode
-
-    setCroppedAreaPixels(null);
-
-    setCropMode(false);
+  };
 
 
-    setZoom(1);
-
-    setRotation(0);
-
-
-
-  } catch(error){
-
-
-    console.error(
-      "Crop Failed:",
-      error
-    );
-
-
-    alert(
-      "Crop failed"
-    );
-
-
-  }
-
-};
 
 
 
@@ -171,6 +222,7 @@ export default function ImageEditor({
 
 
 
+
       <div className="grid lg:grid-cols-3 gap-8">
 
 
@@ -179,18 +231,32 @@ export default function ImageEditor({
 
 
           <PreviewCanvas
-  image={editedImage}
-  zoom={zoom}
-  rotation={rotation}
-  brightness={brightness}
-  contrast={contrast}
-  saturation={saturation}
-  flipX={flipX}
-  flipY={flipY}
-  cropMode={cropMode}
-  cropAspect={cropAspect}
-  setCroppedAreaPixels={setCroppedAreaPixels}
-/>
+
+            image={editedImage}
+
+            zoom={zoom}
+
+            rotation={rotation}
+
+            brightness={brightness}
+
+            contrast={contrast}
+
+            saturation={saturation}
+
+            flipX={flipX}
+
+            flipY={flipY}
+
+            cropMode={cropMode}
+
+            cropAspect={cropAspect}
+
+            setCroppedAreaPixels={
+              setCroppedAreaPixels
+            }
+
+          />
 
 
         </div>
@@ -227,6 +293,7 @@ export default function ImageEditor({
 
 
 
+
           <CropControls
 
             cropMode={cropMode}
@@ -245,179 +312,139 @@ export default function ImageEditor({
 
 
 
+
           <EditorActions
 
-            onRotateLeft={() =>
-              setRotation(rotation - 90)
+
+            onRotateLeft={()=>
+              setRotation(rotation-90)
             }
 
-            onRotateRight={() =>
-              setRotation(rotation + 90)
+
+            onRotateRight={()=>
+              setRotation(rotation+90)
             }
 
-            onFlipHorizontal={() =>
+
+            onFlipHorizontal={()=>
               setFlipX(!flipX)
             }
 
-            onFlipVertical={() =>
+
+            onFlipVertical={()=>
               setFlipY(!flipY)
             }
+
 
             onReset={resetEditor}
 
 
-            onDownload={() => {
 
-              const link = document.createElement("a");
+            onDownload={()=>{
 
-              link.href = editedImage;
 
-              link.download = "Infodep-Edited-Image.jpg";
+              const link =
+              document.createElement("a");
+
+
+              link.href =
+              editedImage;
+
+
+              link.download =
+              "Infodep-Edited-Image.jpg";
+
 
               document.body.appendChild(link);
 
+
               link.click();
 
+
               document.body.removeChild(link);
+
 
             }}
 
 
-          onPrint={() => {
 
-  const printArea = document.getElementById("print-area");
+            onPrint={()=>{
 
-  if (!printArea) {
-    alert("Print area not found");
-    return;
-  }
 
+              const printArea =
+              document.getElementById(
+                "print-area"
+              );
 
-  const printWindow = window.open("", "_blank");
 
-  if (!printWindow) return;
 
+              if(!printArea){
 
-  printWindow.document.write(`
+                alert(
+                  "Print area not found"
+                );
 
-<html>
+                return;
 
-<head>
+              }
 
-<title>Infodep Print Hub</title>
 
 
-<style>
 
-*{
- box-sizing:border-box;
-}
+              const printWindow =
+              window.open(
+                "",
+                "_blank"
+              );
 
 
-@page{
 
- size:A4;
- margin:0;
+              if(!printWindow) return;
 
-}
 
 
-html,body{
 
- width:210mm;
- height:297mm;
- margin:0;
- padding:0;
+              printWindow.document.write(`
 
-}
+              <html>
+              <head>
+              <title>
+              Infodep Print Hub
+              </title>
+              </head>
 
+              <body>
 
-body{
+              ${printArea.outerHTML}
 
- display:flex;
- justify-content:center;
- align-items:flex-start;
+              </body>
 
-}
+              </html>
 
+              `);
 
-#print-area{
 
- width:210mm !important;
- height:297mm !important;
 
- position:relative;
- overflow:hidden;
+              printWindow.document.close();
 
-}
 
 
+              printWindow.onload=()=>{
 
-img{
+                printWindow.focus();
 
- position:absolute;
+                printWindow.print();
 
-}
+                printWindow.close();
 
+              };
 
 
-@media print{
+            }}
 
- body{
 
-  margin:0;
-  padding:0;
+          />
 
- }
-
-
- #print-area{
-
-  page-break-after:avoid;
-  page-break-inside:avoid;
-
- }
-
-}
-
-
-</style>
-
-
-</head>
-
-
-<body>
-
-
-${printArea.outerHTML}
-
-
-</body>
-
-
-</html>
-
-
-`);
-
-
-printWindow.document.close();
-
-
-printWindow.onload = () => {
-
- printWindow.focus();
-
- printWindow.print();
-
- printWindow.close();
-
-};
-
-
-}}
- />
 
 
         </div>
@@ -430,4 +457,5 @@ printWindow.onload = () => {
     </div>
 
   );
+
 }

@@ -2,6 +2,7 @@
 
 import PerspectiveCrop from "./PerspectiveCrop";
 
+
 type PreviewCanvasProps = {
   image: string;
   zoom: number;
@@ -11,110 +12,122 @@ type PreviewCanvasProps = {
   saturation: number;
   flipX: boolean;
   flipY: boolean;
-  cropMode: boolean;
-  cropAspect: number | undefined;
 
-  setCroppedAreaPixels: (value: any) => void;
+  cropMode: boolean;
+
+  cropAspect:number | undefined;
+
+  setCroppedAreaPixels:(value:any)=>void;
 };
+
 
 
 export default function PreviewCanvas({
 
-  image,
-  zoom,
-  rotation,
-  brightness,
-  contrast,
-  saturation,
-  flipX,
-  flipY,
-  cropMode,
-  cropAspect,
-  setCroppedAreaPixels,
+image,
+zoom,
+rotation,
+brightness,
+contrast,
+saturation,
+flipX,
+flipY,
+cropMode,
+setCroppedAreaPixels,
 
-}: PreviewCanvasProps) {
-
-
-  if (!image) return null;
+}:PreviewCanvasProps){
 
 
-  return (
-
-    <div
-      className="
-      relative
-      flex
-      justify-center
-      items-center
-      bg-gray-100
-      border
-      rounded-xl
-      p-6
-      min-h-[550px]
-      overflow-hidden
-      "
-    >
+if(!image) return null;
 
 
-      {cropMode ? (
 
-       <PerspectiveCrop
-   image={image}
-   setCroppedAreaPixels={setCroppedAreaPixels}
+return (
+
+<div
+
+className="
+relative
+flex
+justify-center
+items-center
+bg-gray-100
+border
+rounded-xl
+p-6
+min-h-[550px]
+overflow-hidden
+"
+
+
+>
+
+
+{cropMode ? (
+
+<PerspectiveCrop
+
+image={image}
+
+setCroppedAreaPixels={
+setCroppedAreaPixels
+}
+
 />
 
 
-      ) : (
+)
+
+:(
 
 
-        <img
+<img
 
-          src={image}
+src={image}
 
-          alt="Preview"
-
-
-          style={{
-
-            transform:`
-
-              scale(${zoom})
-              rotate(${rotation}deg)
-              scaleX(${flipX ? -1 : 1})
-              scaleY(${flipY ? -1 : 1})
-
-            `,
+alt="Preview"
 
 
-            filter:`
+style={{
 
-              brightness(${brightness}%)
-              contrast(${contrast}%)
-              saturate(${saturation}%)
+transform:`
 
-            `,
+scale(${zoom})
+rotate(${rotation}deg)
+scaleX(${flipX ? -1:1})
+scaleY(${flipY ? -1:1})
 
-
-            transition:"all .3s ease"
-
-          }}
+`,
 
 
-          className="
-          max-w-full
-          max-h-[500px]
-          object-contain
-          rounded-lg
-          shadow-lg
-          "
+filter:`
 
-        />
+brightness(${brightness}%)
+contrast(${contrast}%)
+saturate(${saturation}%)
 
+`,
 
-      )}
+}}
 
 
-    </div>
+className="
+max-w-full
+max-h-[500px]
+object-contain
+rounded-lg
+shadow-lg
+"
 
-  );
+/>
+
+
+)}
+
+
+</div>
+
+
+);
+
 }
